@@ -1,0 +1,113 @@
+% =====================================================================
+% references.bib -- from Swarm_Project_Proposal_2 reference list,
+% plus the sources the new methodology needs (Hungarian algorithm,
+% ARGoS, cross-inhibition, replicator dynamics).
+% Proposal refs 2 and 6 were the same Hu et al. paper; merged here.
+% Proposal ref 8 (gym-cap) dropped per feedback; ref 10 marked "NO".
+% =====================================================================
+
+@article{bloembergen2015evolutionary,
+  author  = {Bloembergen, Daan and Tuyls, Karl and Hennes, Daniel and Kaisers, Michael},
+  title   = {Evolutionary Dynamics of Multi-Agent Learning: A Survey},
+  journal = {Journal of Artificial Intelligence Research},
+  volume  = {53},
+  number  = {1},
+  pages   = {659--697},
+  year    = {2015}
+}
+
+@misc{hu2018centralize,
+  author       = {Hu, J. and Bruno, A. and Zagieboylo, D. and Zhao, M. and Ritchken, B. and Jackson, B. and Chae, J. Y. and Mertil, F. and Espinosa, M. and Delimitrou, C.},
+  title        = {To Centralize or Not to Centralize: A Tale of Swarm Coordination},
+  howpublished = {arXiv:1805.01786},
+  year         = {2018},
+  url          = {https://arxiv.org/abs/1805.01786}
+}
+
+@article{huang2015automation,
+  author  = {Huang, H. and Ding, J. and Zhang, W. and Tomlin, C. J.},
+  title   = {Automation-Assisted Capture-the-Flag: A Differential Game Approach},
+  journal = {IEEE Transactions on Control Systems Technology},
+  volume  = {23},
+  number  = {3},
+  pages   = {1014--1028},
+  month   = may,
+  year    = {2015},
+  doi     = {10.1109/TCST.2014.2360502}
+}
+
+@misc{jaderberg2018human,
+  author       = {Jaderberg, M. and Czarnecki, W. M. and Dunning, I. and Marris, L. and Lever, G. and Castaneda, A. G. and Beattie, C. and Rabinowitz, N. C. and Morcos, A. S. and Ruderman, A. and Sonnerat, N. and Green, T. and Deason, L. and Leibo, J. Z. and Silver, D. and Hassabis, D. and Kavukcuoglu, K. and Graepel, T.},
+  title        = {Human-Level Performance in First-Person Multiplayer Games with Population-Based Deep Reinforcement Learning},
+  howpublished = {arXiv:1807.01281},
+  year         = {2018},
+  url          = {https://arxiv.org/abs/1807.01281}
+}
+
+@phdthesis{strickland2022thesis,
+  author = {Strickland, Laura},
+  title  = {Coordinating Team Tactics for Swarm-vs.-Swarm Adversarial Games},
+  school = {Georgia Institute of Technology},
+  month  = aug,
+  year   = {2022},
+  url    = {https://c14750.wpmucdn.com/958/files/2024/01/Laura-Strickland-PhD-Thesis-22-f171c71c3a364e8e.pdf}
+}
+
+@inproceedings{tolstaya2020gnn,
+  author    = {Tolstaya, Ekaterina and Gama, Fernando and Paulos, James and Pappas, George and Kumar, Vijay and Ribeiro, Alejandro},
+  title     = {Learning Decentralized Controllers for Robot Swarms with Graph Neural Networks},
+  booktitle = {Conference on Robot Learning (CoRL)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {100},
+  pages     = {671--682},
+  year      = {2020},
+  url       = {https://proceedings.mlr.press/v100/tolstaya20a.html}
+}
+
+@misc{swarmctfrepo,
+  author       = {Bingham, Aedan and Boozer, Theron and Kaiser, Kelson},
+  title        = {swarm\_capture\_the\_flag: Simplified Capture the Flag Environment},
+  howpublished = {\url{https://github.com/aedan-b/swarm_capture_the_flag}},
+  year         = {2026}
+}
+
+% ---------- Added for the reframed methodology ------------------------
+@article{kuhn1955hungarian,
+  author  = {Kuhn, Harold W.},
+  title   = {The {H}ungarian Method for the Assignment Problem},
+  journal = {Naval Research Logistics Quarterly},
+  volume  = {2},
+  number  = {1--2},
+  pages   = {83--97},
+  year    = {1955}
+}
+
+@article{pinciroli2012argos,
+  author  = {Pinciroli, Carlo and Trianni, Vito and O'Grady, Rehan and Pini, Giovanni and Brutschy, Arne and Brambilla, Manuele and Mathews, Nithin and Ferrante, Eliseo and Di Caro, Gianni and Ducatelle, Frederick and Birattari, Mauro and Gambardella, Luca Maria and Dorigo, Marco},
+  title   = {{ARGoS}: A Modular, Parallel, Multi-Engine Simulator for Multi-Robot Systems},
+  journal = {Swarm Intelligence},
+  volume  = {6},
+  number  = {4},
+  pages   = {271--295},
+  year    = {2012}
+}
+
+@article{seeley2012stop,
+  author  = {Seeley, Thomas D. and Visscher, P. Kirk and Schlegel, Thomas and Hogan, Patrick M. and Franks, Nigel R. and Marshall, James A. R.},
+  title   = {Stop Signals Provide Cross Inhibition in Collective Decision-Making by Honeybee Swarms},
+  journal = {Science},
+  volume  = {335},
+  number  = {6064},
+  pages   = {108--111},
+  year    = {2012}
+}
+
+@article{taylor1978ess,
+  author  = {Taylor, Peter D. and Jonker, Leo B.},
+  title   = {Evolutionary Stable Strategies and Game Dynamics},
+  journal = {Mathematical Biosciences},
+  volume  = {40},
+  number  = {1--2},
+  pages   = {145--156},
+  year    = {1978}
+}
