@@ -31,4 +31,10 @@
 #    - pygame
 #    - what do we want to visualize
 #        - arena over time
-#        - 
+#        - isolate defender and attacker movement
+#        - average distance between agents over time
+#        - visualize messages for debugging
+#        - visualize vectors
+#        - trace / path pheremone
+
+
