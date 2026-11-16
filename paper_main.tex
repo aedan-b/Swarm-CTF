@@ -1,0 +1,309 @@
+% =====================================================================
+%  Swarm Intelligence Project: When Does Decentralization Win?
+%  Paper skeleton -- IEEE conference format (Overleaf-ready)
+%  Follows the structure of Swarm_Project_Proposal_2 (Secs. 1--5).
+%
+%  How to use:
+%    - Upload main.tex and references.bib to a new Overleaf project.
+%    - Compiler: pdfLaTeX. IEEEtran.cls ships with Overleaf.
+%    - Every \todo{...} prints in red so gaps are obvious in the PDF.
+%    - "% NOTE:" comments say what each part should do.
+% =====================================================================
+
+\documentclass[conference]{IEEEtran}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cite}
+
+% ---------- Working macros -------------------------------------------
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\newcommand{\placeholderfig}[2]{%
+  \fbox{\parbox[c][#1][c]{0.95\linewidth}{\centering\small\textcolor{gray}{#2}}}}
+
+% ---------- Notation --------------------------------------------------
+\newcommand{\nD}{D}            % number of defenders
+\newcommand{\nA}{A}            % number of attackers
+\newcommand{\nG}{G}            % games per configuration
+\newcommand{\hor}{k}           % information horizon (hops)
+\newcommand{\feint}{\phi}      % attacker feint fraction
+\newcommand{\crange}{r_c}      % communication radius
+\newcommand{\rtag}{r_{\mathrm{tag}}}
+\newcommand{\vmax}{v_{\max}}
+
+\begin{document}
+
+% =====================================================================
+\title{When Does Decentralization Win Against an Adversary?\\
+Information Horizons in Swarm Capture-the-Flag}
+% NOTE: Working title built from the reframed question in the feedback.
+
+\author{
+\IEEEauthorblockN{Aedan Bingham, Theron Boozer, Kelson Kaiser}
+\IEEEauthorblockA{Worcester Polytechnic Institute\\
+Worcester, MA, USA\\
+\todo{emails}}
+}
+
+\maketitle
+
+% =====================================================================
+\begin{abstract}
+% NOTE: ~150--200 words. Problem, question, method, headline result, takeaway.
+\todo{Defenders guarding a flag must decide how far threat information should travel: purely local reaction, gossip over a few hops, or a central coordinator.}
+\todo{We ask when decentralization wins against an adversary that can feint, by varying the defenders' information horizon $\hor$ from fully local ($\hor=0$) to fully centralized ($\hor=\infty$).}
+\todo{Method: point-mass simulation of $\nD$ defenders vs.\ $\nA$ scripted attackers (rush, staggered waves, feint) over $\nG$ games per setting.}
+\todo{Headline: phase diagram of defense success over $\hor \times \feint$; e.g., centralized wins when $\feint < X$, small-$\hor$ swarms win when $\feint > Y$.}
+\todo{Takeaway + failure taxonomy in one sentence.}
+\end{abstract}
+
+\begin{IEEEkeywords}
+swarm intelligence, capture the flag, decentralized control, information horizon, adversarial games
+\end{IEEEkeywords}
+
+% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+\subsection{Context}
+% NOTE: From proposal 1.1. Keep to one paragraph.
+Teams of robots in adversarial games can coordinate through a central decision-maker or through local, swarm-style rules. Which works better depends on the game and the environment. We study this question in capture-the-flag (CTF): how does the distribution of decision agency, from fully local to fully centralized, change how well a team defends against an adversary?
+\todo{Expand with 1--2 sentences of motivation (real multi-robot defense/coverage settings).}
+
+\subsection{Problem}
+% NOTE: Reframed per instructor feedback: one question about collective
+% behavior, not a co-evolutionary RL pipeline.
+\textbf{Question:} \emph{When does decentralization win against an adversary, and why?}
+Defenders protect a flag against attackers who can feint. We study how the defenders' \emph{information horizon} $\hor$, the number of hops threat information propagates, affects how easily the adversary can exploit their collective response.
+
+\subsubsection{Significance}
+Knowing which decision-agency distribution fits a given adversarial setting lets designers build teams that solve swarming problems efficiently, rather than defaulting to centralization or to fully local rules.
+\todo{One sentence on the cost of getting it wrong (e.g., a centralized team pulled entirely onto a decoy).}
+
+\subsubsection{Difficulty}
+The outcome depends on many interacting factors: communication range, team sizes, attacker strategy, and the timing of information relative to movement. Strategies that look strong against one attacker can be exploited by another, so no single configuration is obviously best.
+\todo{Tighten; tie difficulty to the feint (information that arrives fast can also mislead fast).}
+
+\subsection{Contributions}
+\begin{enumerate}
+  \item \todo{A minimal point-mass CTF simulator with a tunable information horizon $\hor$.}
+  \item \todo{A phase diagram of defense success over information horizon $\hor$ and attacker feint fraction $\feint$.}
+  \item \todo{A taxonomy of the ways the adversary wins.}
+  \item \todo{(Optional) an empirical game analysis and one mitigation.}
+\end{enumerate}
+
+% =====================================================================
+\section{Related Work}
+\label{sec:related}
+% NOTE: Proposal 2.1, grouped into themes. End each paragraph with how
+% our work differs.
+
+\subsection{Centralized vs.\ Decentralized Coordination}
+Hu et al.~\cite{hu2018centralize} compare centralized and decentralized swarm coordination: centralized systems make higher-quality decisions but face scalability limits, and the comparison shows which strategies and environments suit each architecture. Strickland~\cite{strickland2022thesis} studies centralized vs.\ decentralized tactics in swarm-vs-swarm games and trains agents to switch between tactics rather than fall into repeating patterns.
+\todo{How we differ: we vary agency continuously through $\hor$ instead of comparing two fixed architectures.}
+
+\subsection{Capture-the-Flag and Adversarial Games}
+Huang et al.~\cite{huang2015automation} analyze and solve CTF as a zero-sum differential game. Jaderberg et al.~\cite{jaderberg2018human} train agents with deep reinforcement learning that consistently beat strong human players in a CTF video game.
+\todo{How we differ: scripted adversary with deception (feints), focus on collective defense response.}
+
+\subsection{Communication and Information Propagation}
+Tolstaya et al.~\cite{tolstaya2020gnn} examine how communication variables (radius, speed, delay) affect the value of multi-hop, relayed information in decentralized swarm controllers.
+\todo{How we differ: information horizon as the main variable, against a deceptive adversary.}
+
+\subsection{Evolutionary Dynamics of Multi-Agent Learning}
+Bloembergen et al.~\cite{bloembergen2015evolutionary} survey the evolutionary dynamics of multi-agent learning, the basis for the optional empirical game analysis in Sec.~\ref{sec:empirical-game}.
+
+\subsection{Novelty}
+Most related work studies either strategies \emph{within} adversarial games or decision-agency distributions in \emph{non-adversarial} settings. We identify the best decision-agency distribution \emph{within} an adversarial game, against an opponent that actively tries to exploit it.
+
+% =====================================================================
+\section{Methodology}
+\label{sec:method}
+
+\subsection{Problem Formulation}
+% NOTE: Proposal 3.1, written formally.
+Consider a 2D continuous arena $\mathcal{W} = [0, 100]^2$\,m with a flag at its center $\mathbf{f}$, $\nD$ defenders, and $\nA$ attackers following a scripted strategy. Each defender acts on threat information that propagates up to $\hor$ hops through the defender communication network, where $\hor = 0$ means information is local to each defender and $\hor = \infty$ means information is fully centralized.
+
+For each $\hor$, play $\nG$ games and record, for game $g$, the number of flag captures $C_g(\hor)$ and the game length $T_g(\hor)$ in time steps. The best response is the horizon with the fewest captures across all games:
+\begin{equation}
+  \hor^* = \arg\min_{\hor} \sum_{g=1}^{\nG} C_g(\hor),
+  \label{eq:best-response}
+\end{equation}
+with ties broken as in Sec.~\ref{sec:problems}. Success means showing that different $\hor$ are the best response in different scenarios.
+
+\subsection{Approach}
+
+\subsubsection{Structure}
+Attackers and defenders move as points in the arena. There is no physics; the only movement variables are maximum speed and capture radius. Attackers follow scripted strategies fixed by the experimenters, with the goal of touching the flag. Defenders run a simple local controller to keep attackers away from the flag.
+
+\subsubsection{Agents}
+% NOTE: Proposal 3.2.2. Parameters may change later (footnote).
+Table~\ref{tab:agents} lists each entity's properties.\footnote{Arena size, speeds, and tag radius may be varied later in the project.}
+
+\begin{table}[t]
+  \centering
+  \caption{Agent properties}
+  \label{tab:agents}
+  \begin{tabular}{@{}p{0.2\linewidth}p{0.7\linewidth}@{}}
+    \toprule
+    Entity & Properties \\
+    \midrule
+    Attacker & $\vmax = 2$\,m/s, instantaneous acceleration. Strategy: direct rush, staggered waves, or feint (a decoy subset shows itself early on one side; the main force arrives later on the other). Wins if at least one attacker touches the flag. \\
+    \addlinespace
+    Defender & $\vmax = 2$\,m/s, instantaneous acceleration; tags attackers within $\rtag = 1$\,m. Patrols by random walk or Voronoi-style spacing around the flag. On detecting an attacker, pursues it and broadcasts a threat signal so other defenders can join. Wins if no attacker touches the flag. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsubsection{Information Horizon}
+% NOTE: The parameter to study (from feedback).
+Defenders $i$ and $j$ are linked when $\lVert \mathbf{p}_i - \mathbf{p}_j \rVert \le \crange$. Each defender may send one signal per time step, so a threat signal reaches defenders up to $\hor$ hops from the detecting defender.
+\begin{itemize}
+  \item $\hor = 0$: purely local; a defender reacts only to what it sees itself.
+  \item $\hor = 1, 2, \dots$: gossip-limited propagation.
+  \item $\hor = \infty$: centralized team. A single coordinator sees everything and assigns defenders to attackers optimally using the Hungarian algorithm~\cite{kuhn1955hungarian}.
+\end{itemize}
+\todo{Define the centralized assignment cost (e.g., distance or time-to-intercept from defender $i$ to attacker $j$).}
+
+\subsubsection{Attacker Feint}
+\todo{Define the feint fraction $\feint \in [0,1]$ as the share of attackers in the decoy subset; define decoy timing/side.}
+
+\begin{algorithm}[t]
+  \caption{Defender controller with information horizon $\hor$}
+  \label{alg:defender}
+  \begin{algorithmic}[1]
+    \For{each time step $t$}
+      \If{attacker detected within sensing range}
+        \State Pursue nearest attacker; emit threat signal (hop count 0)
+      \ElsIf{received threat signal with hop count $h < \hor$}
+        \State Join pursuit; relay signal with hop count $h+1$
+      \Else
+        \State Patrol (random walk or Voronoi spacing)
+      \EndIf
+    \EndFor
+  \end{algorithmic}
+\end{algorithm}
+% NOTE: Replace with the actual controller once implemented. Centralized
+% ($k = \infty$) bypasses this and uses the Hungarian assignment.
+
+\subsubsection{Potential Problems}
+\label{sec:problems}
+\begin{enumerate}
+  \item \textbf{Ties and full sweeps.} If no flags are captured across several horizons, the best response is the one that tags all attackers in the fewest time steps. If several horizons allow the same non-zero number of captures, the best response is the one that delays capture longest.
+  \item \textbf{Network breaks.} A radius-based network can fragment, or have a maximum hop distance smaller than $\hor$. Alternatives: link each defender to its $z$ nearest neighbors, or use a Voronoi-based network.
+  \item \textbf{Environment value.} Without embodied agents, it is unclear how to perceive different environments or objectively assign their value. \todo{decide how to handle or scope out}
+\end{enumerate}
+
+\subsubsection{Potential Extra Variables}
+Speed differences between attackers and defenders; communication speed relative to movement speed; obstacles; multiple or nearby flags; distance-dependent sensing; and a probabilistic tag (attack chance) to add uncertainty to attacker--defender encounters.
+\todo{Pick at most one or two for the final paper.}
+
+% =====================================================================
+\section{Experimental Evaluation}
+\label{sec:eval}
+
+\subsection{Setup}
+% NOTE: Feedback advises a point-mass NumPy script or ARGoS, and against
+% gym-cap. The proposal's 4.2 still names gym-cap -- update before submitting.
+We use a point-mass simulator written in NumPy~\cite{swarmctfrepo}. \todo{or ARGoS~\cite{pinciroli2012argos}; confirm.}
+Communication is distance-based, with one signal per agent per time step. Communication range $\crange$ and the number of agents per team are treated as parameters.
+
+\begin{table}[t]
+  \centering
+  \caption{Experimental parameters \todo{fill values}}
+  \label{tab:params}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Parameter & Symbol & Values \\
+    \midrule
+    Information horizon       & $\hor$     & $0, 1, 2, \dots, \infty$ \\
+    Feint fraction            & $\feint$   & \todo{0, 0.1, \dots, 0.5} \\
+    Communication radius      & $\crange$  & \todo{} \\
+    Defenders / attackers     & $\nD, \nA$ & \todo{} \\
+    Attacker strategy         & --         & rush, waves, feint \\
+    Games per configuration   & $\nG$      & \todo{} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Metrics}
+Primary: defense success, the fraction of the $\nG$ games with no flag capture. Secondary: captures per game, time to first capture, time to tag all attackers.
+We also measure how well the approach predicts the best decision-agency distribution, $\hor^*$ from Eq.~\eqref{eq:best-response}, on a set of test environments.
+\todo{Define the test environments.}
+
+% =====================================================================
+\section{Results}
+\label{sec:results}
+% NOTE: One subsection per deliverable (proposal 4.3). Lead each with
+% the finding and its number.
+
+\subsection{Phase Diagram}
+\todo{Defense success over information horizon $\hor$ $\times$ attacker feint fraction $\feint$.}
+
+\begin{figure}[t]
+  \centering
+  \placeholderfig{5cm}{Figure (headline): defense success over $k$ (x-axis) $\times$ feint fraction $\phi$ (y-axis)}
+  \caption{Phase diagram of defense success. \todo{caption}}
+  \label{fig:phase}
+\end{figure}
+
+\subsection{Failure Taxonomy}
+\todo{When does the adversary win? Categorize losing games.}
+
+\begin{table}[t]
+  \centering
+  \caption{Failure taxonomy \todo{fill from results}}
+  \label{tab:failures}
+  \begin{tabular}{@{}p{0.3\linewidth}p{0.6\linewidth}@{}}
+    \toprule
+    Failure mode & Description / where it occurs \\
+    \midrule
+    \todo{e.g., decoy over-commitment} & \todo{too many defenders pulled to the feint (large $\hor$)} \\
+    \todo{e.g., late information}      & \todo{threat signal arrives too late (small $\hor$)} \\
+    \todo{e.g., network fragmentation} & \todo{radius too small for $\hor$ hops} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Empirical Game (Optional)}
+\label{sec:empirical-game}
+\todo{Payoff matrix between defender horizons and attacker strategies, its equilibria, and replicator trajectories~\cite{bloembergen2015evolutionary,taylor1978ess}.}
+For defender horizon shares $\mathbf{x}$ and attacker strategy shares $\mathbf{y}$ with payoff matrices $M$ and $N$:
+\begin{align}
+  \dot{x}_i &= x_i \left[ (M\mathbf{y})_i - \mathbf{x}^\top M \mathbf{y} \right], \\
+  \dot{y}_j &= y_j \left[ (\mathbf{x}^\top N)_j - \mathbf{x}^\top N \mathbf{y} \right].
+\end{align}
+
+\subsection{Mitigation (Optional)}
+\todo{One mitigation, e.g., cross-inhibition~\cite{seeley2012stop} or a commitment cap (maximum share of defenders that may pursue a single threat), and its effect on the phase diagram.}
+
+% =====================================================================
+\section{Discussion}
+\label{sec:discussion}
+% NOTE: Required by the assignment: under which conditions does the
+% approach work, when does it break down, and at least one case where it
+% does not work, with an explanation.
+\subsection{When the Approach Works}
+\todo{}
+\subsection{When It Breaks Down}
+\todo{At least one failure case and why.}
+\subsection{Limitations}
+\todo{Scripted attackers, point-mass dynamics, no obstacles, etc.}
+
+% =====================================================================
+\section{Conclusions}
+\label{sec:conclusion}
+\todo{Main contributions.}
+\todo{When the approach works and when it does not.}
+\todo{Future work.}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
