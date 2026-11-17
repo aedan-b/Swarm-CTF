@@ -46,14 +46,16 @@ class Defender(agent.Agent):
 		circle_x = comm_radius
 		circle_y = 0
 		while circle_x >= circle_y:
-			circle_positions.append([circle_x + self.position[0], circle_y + self.position[1]]) 	# first octant ++
-			circle_positions.append([circle_y + self.position[0], circle_x + self.position[1]]) 	# second octant
-			circle_positions.append([-circle_y + self.position[0], circle_x + self.position[1]]) 	# third octant -+
-			circle_positions.append([-circle_x + self.position[0], circle_y + self.position[1]]) 	# fourth octant
-			circle_positions.append([-circle_x + self.position[0], -circle_y + self.position[1]]) 	# fifth octant +-
-			circle_positions.append([-circle_y + self.position[0], -circle_x + self.position[1]]) 	# sixth octant
-			circle_positions.append([circle_y + self.position[0], -circle_x + self.position[1]]) 	# seventh octant --
-			circle_positions.append([circle_x + self.position[0], -circle_y + self.position[1]]) 	# eighth octant
+			for i in range(circle_x + 1):
+
+				circle_positions.append([circle_x + self.position[0] - i, circle_y + self.position[1]]) 	# first octant ++
+				circle_positions.append([circle_y + self.position[0], circle_x + self.position[1] - i]) 	# second octant
+				circle_positions.append([-circle_y + self.position[0], circle_x + self.position[1] - i]) 	# third octant -+
+				circle_positions.append([-circle_x + self.position[0] + i, circle_y + self.position[1]]) 	# fourth octant
+				circle_positions.append([-circle_x + self.position[0] + i, -circle_y + self.position[1]]) 	# fifth octant +-
+				circle_positions.append([-circle_y + self.position[0], -circle_x + self.position[1] + i]) 	# sixth octant
+				circle_positions.append([circle_y + self.position[0], -circle_x + self.position[1] + i]) 	# seventh octant --
+				circle_positions.append([circle_x + self.position[0] - i, -circle_y + self.position[1]]) 	# eighth octant
 			
 
 			d = math.sqrt((circle_x - 0.5)**2 + (circle_y + 1)**2)
