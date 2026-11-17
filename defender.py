@@ -4,11 +4,12 @@
 # for the defender, the extension will consist of:
   # messaging
   # coordination
-import agent
-Agent = agent.Agent
-
 class Defender(Agent):
-    
-    def __init__(self):
-        
-        pass
+	def __init__(self, id, position):
+		self.broadcast = []
+		self.messages = [Message]
+
+	def readMessages(self):
+		#grab messages from location
+		#check actual distance
+		self.messages = []
