@@ -40,7 +40,7 @@ class Defender(agent.Agent):
 		
 
 
-	def __get_circle(self, radius):
+	def get_circle(self, radius):
 		circle_positions=[]
 		
 		circle_x = comm_radius
@@ -48,18 +48,23 @@ class Defender(agent.Agent):
 		while circle_x >= circle_y:
 			circle_positions.append([circle_x + self.position[0], circle_y + self.position[1]]) 	# first octant ++
 			circle_positions.append([circle_y + self.position[0], circle_x + self.position[1]]) 	# second octant
-			circle_positions.append([circle_y + self.position[0], -circle_x + self.position[1]]) 	# third octant +-
-			circle_positions.append([circle_y + self.position[0], circle_x + self.position[1]]) 	# second octant
+			circle_positions.append([-circle_y + self.position[0], circle_x + self.position[1]]) 	# third octant -+
+			circle_positions.append([-circle_x + self.position[0], circle_y + self.position[1]]) 	# fourth octant
+			circle_positions.append([-circle_x + self.position[0], -circle_y + self.position[1]]) 	# fifth octant +-
+			circle_positions.append([-circle_y + self.position[0], -circle_x + self.position[1]]) 	# sixth octant
+			circle_positions.append([circle_y + self.position[0], -circle_x + self.position[1]]) 	# seventh octant --
+			circle_positions.append([circle_x + self.position[0], -circle_y + self.position[1]]) 	# eighth octant
 			
 
-			d = math.sqrt((circle_x - 0.5)^2 + (circle_y + 1)^2)
+			d = math.sqrt((circle_x - 0.5)**2 + (circle_y + 1)**2)
 			if d > comm_radius:
 				circle_x -= 1
 
 			circle_y += 1
 
-		pseudo_circle_positions = circle_positions
-		for pos in pseudo_circle_positions:
-			circle_positions =0
+		# pseudo_circle_positions = circle_positions
+		# for pos in pseudo_circle_positions:
+		# 	circle_positions =0
+		return circle_positions
 
 		
