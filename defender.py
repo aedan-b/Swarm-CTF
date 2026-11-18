@@ -23,11 +23,13 @@ class Defender(agent.Agent):
 		self.messages = []
 		self.action = []
 
+
 	def readMessages(self):
 		#grab messages from location
 		#check actual distance
 		self.messages = []
 
+		
 	def broadcast_message(self):
 		#assemble message
 		self.broadcast = {
@@ -108,6 +110,7 @@ class Defender(agent.Agent):
 			circle_y += 1
 
 		return circle_positions
+
 
 	def __safe_append(self, array, point):
 		if self.__check_boundaries(point):
