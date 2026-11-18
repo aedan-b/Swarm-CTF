@@ -10,4 +10,5 @@
 	"vision_radius": 10,
 	"arena_height": 100,
 	"arena_width": 100,
+	"seed": 1
 }
