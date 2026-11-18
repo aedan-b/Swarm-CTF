@@ -1,4 +1,5 @@
 # Swarm-CTF
+scheduler will return [defenders_history, attackers_history]
 History:
 
 History is an array of timesteps
