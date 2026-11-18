@@ -1,11 +1,3 @@
-# define play-space
-# enable obstacles if desired
-# spawn in agents
-# define runtime
-# run scheduler to perform stepping
-# visualize
-
-
 #---------------------------------------------------------------------------------------------------------
 # TODO 1. imports
 # --- Standard library ---
@@ -35,26 +27,28 @@ import matplotlib.pyplot as plt  # post-run analysis plots (avg inter-agent dist
 # --- Your own modules (step 3) ---
 # from messaging import Broadcast, Message
 # from positioning import update_position
+import json
 #---------------------------------------------------------------------------------------------------------
 
 
 # TODO 3. initialize global variables
 # Arena settings
-ARENA_WIDTH = 800
-ARENA_HEIGHT = 600
-NUM_ATTACKERS = 5
-NUM_DEFENDERS = 5
-AGENT_SPEED = 2.0
-COMMUNICATION_RANGE = 100.0
-FLAG_POSITION = (ARENA_WIDTH -200, ARENA_HEIGHT // 2)
-FLAG_RADIUS = 20
-MAX_TIMESTEPS = 1000
-FPS = 60
-SEED = 1
+
+# defined in json
+#    ARENA_WIDTH = 100
+#    ARENA_HEIGHT = 100
+#    NUM_ATTACKERS = 5
+#    NUM_DEFENDERS = 5
+#    AGENT_SPEED = 2.0
+#    COMMUNICATION_RANGE = 100.0
+#    FLAG_POSITION = (ARENA_WIDTH -200, ARENA_HEIGHT // 2)
+#    FLAG_RADIUS = 20
+#    MAX_TIMESTEPS = 1000
+#    FPS = 60
 BG_COLOR = (0, 0, 0)  # black background
 ATTACKER_COLOR = (255, 0, 0)  # red attackers
 DEFENDER_COLOR = (0, 0, 255)  # blue defenders
-AGENT_RADIUS = 5
+AGENT_RADIUS = 0.5
 
 # Feature toggles
 ENABLE_TAGGING = True   # False = no tag/jail; the TAG / JAIL FEATURE section can then be commented out
@@ -68,8 +62,16 @@ flag_captured = False
 history = []  # list of dicts to store per-timestep data
 #---------------------------------------------------------------------------------------------------------
 
+# TODO 4. different arenas
+# SEED = 1 -- empty arena
+# SEED = 2 -- forest of cylinders
+# SEED = 3 -- rectangles around
+# SEED = 4 -- channel tunnel to flag
+# SEED = 5 -- castle around flag
+#---------------------------------------------------------------------------------------------------------
 
-# TODO 4. build the arena
+
+# TODO 5. build the arena
 #    - spawn in agents (distribution?)
 #    - spawn in obstacles
 #    - spawn in flag zone
@@ -147,129 +149,7 @@ def apply_movement(positions, directions):
 #---------------------------------------------------------------------------------------------------------
 
 
-# =========================================================================================================
-# TAG / JAIL FEATURE  ---------------------------------------------------------------- START
-# Defenders that touch an attacker send it to jail (bottom-left corner) for JAIL_TIME steps.
-# To disable: set ENABLE_TAGGING = False (top of file). You can then comment out this whole section;
-# the rest of the file only touches it through `if ENABLE_TAGGING:` lines.
-# =========================================================================================================
-
-# --- Tag / jail settings ---
-TAG_RADIUS = 2 * AGENT_RADIUS            # defender "touches" attacker when circles overlap
-JAIL_TIME = 100                          # timesteps an attacker spends in jail
-JAIL_POSITION = (40, ARENA_HEIGHT - 40)  # bottom-left corner
-JAIL_SIZE = 60                           # jail square side length (pixels)
-DEFEND_RADIUS = 150                      # defenders chase attackers within this distance of the flag
-GUARD_RING = 70                          # each defender's home post sits on a ring this far from the flag
-SEPARATION_RADIUS = 40                   # defenders push away from teammates closer than this
-JAIL_COLOR = (120, 120, 120)
-JAILED_ATTACKER_COLOR = (120, 40, 40)    # dimmed red while in jail
-
-# --- Tag / jail state ---
-jail_timer = np.zeros(NUM_ATTACKERS, dtype=int)  # steps left in jail per attacker (0 = free)
-tag_count = 0
-
-
-def tag_reset():
-    """Called from build_arena: empty the jail."""
-    global jail_timer, tag_count
-    jail_timer = np.zeros(NUM_ATTACKERS, dtype=int)
-    tag_count = 0
-
-
-def tag_update():
-    """Called at the start of each timestep: count down sentences, return which attackers are free."""
-    np.subtract(jail_timer, 1, out=jail_timer, where=jail_timer > 0)
-    return jail_timer == 0
-
-
-def tag_check():
-    """Called after movement: any free attacker touched by a defender goes to jail."""
-    global tag_count
-    for i in range(NUM_ATTACKERS):
-        if jail_timer[i] > 0:
-            continue  # already in jail
-        dists = np.linalg.norm(defenders - attackers[i], axis=1)
-        if np.any(dists < TAG_RADIUS):
-            jail_timer[i] = JAIL_TIME
-            # spread jailed attackers out in a small grid so they don't overlap
-            offset = np.array([(i % 3) * 15 - 15, (i // 3) * 15 - 15])
-            attackers[i] = np.array(JAIL_POSITION) + offset
-            tag_count += 1
-
-
-def tag_assign_targets(defenders, threats):
-    """Greedy one-to-one matching: repeatedly pair the closest (defender, attacker) that are both
-    still unassigned. Returns {defender index: attacker row in `threats`}. Each attacker gets at most
-    one chaser, so defenders don't all pile onto the same target."""
-    if len(threats) == 0:
-        return {}
-    dist = np.linalg.norm(defenders[:, None, :] - threats[None, :, :], axis=2)  # (defenders, threats)
-    assignment = {}
-    for _ in range(min(len(defenders), len(threats))):
-        j, t = np.unravel_index(np.argmin(dist), dist.shape)
-        assignment[j] = t
-        dist[j, :] = np.inf   # this defender is taken
-        dist[:, t] = np.inf   # this attacker is covered
-    return assignment
-
-
-def tag_separation(defenders):
-    """Push each defender away from teammates within SEPARATION_RADIUS (stronger when closer)."""
-    diff = defenders[:, None, :] - defenders[None, :, :]                # (N, N, 2): vector from k to j
-    dist = np.linalg.norm(diff, axis=2) + 1e-9
-    strength = np.clip(1 - dist / SEPARATION_RADIUS, 0, None)          # 1 when touching, 0 at the radius
-    np.fill_diagonal(strength, 0)                                       # ignore yourself
-    return (diff / dist[:, :, None] * strength[:, :, None]).sum(axis=1)
-
-
-def tag_defender_policy(defenders, attackers, flag, attacker_free):
-    """Zone defense:
-    - Each free attacker within DEFEND_RADIUS of the flag gets ONE chaser (closest available defender).
-    - Defenders without a target return to their own post on a ring around the flag.
-    - All defenders keep some distance from each other (separation)."""
-    flag = np.asarray(flag)
-    n = len(defenders)
-
-    # home posts evenly spaced around the flag
-    angles = np.linspace(0, 2 * np.pi, n, endpoint=False)
-    posts = flag + GUARD_RING * np.column_stack([np.cos(angles), np.sin(angles)])
-
-    # which attackers are threats, and who chases whom
-    threat_idx = np.where(attacker_free & (np.linalg.norm(attackers - flag, axis=1) < DEFEND_RADIUS))[0]
-    assignment = tag_assign_targets(defenders, attackers[threat_idx])
-
-    separation = tag_separation(defenders)
-    directions = np.zeros_like(defenders)
-    for j in range(n):
-        if j in assignment:
-            to_target = attackers[threat_idx[assignment[j]]] - defenders[j]
-            directions[j] = to_target / (np.linalg.norm(to_target) + 1e-9) + 0.5 * separation[j]   # chase
-        else:
-            to_post = posts[j] - defenders[j]
-            dist = np.linalg.norm(to_post)
-            pull = to_post / (dist + 1e-9) * min(dist / 20, 1.0)       # ease in near the post
-            directions[j] = pull + 1.5 * separation[j] + rng.normal(0, 0.3, size=2)            # hold post
-    return directions
-
-
-def tag_draw(screen, font):
-    """Called from draw_arena: jail box, dimmed jailed attackers, tag counter."""
-    jail_rect = pygame.Rect(0, 0, JAIL_SIZE, JAIL_SIZE)
-    jail_rect.center = JAIL_POSITION
-    pygame.draw.rect(screen, JAIL_COLOR, jail_rect, width=2)
-    for i, attacker in enumerate(attackers):
-        if jail_timer[i] > 0:
-            pygame.draw.circle(screen, JAILED_ATTACKER_COLOR, attacker.astype(int), AGENT_RADIUS)
-    tags_text = font.render(f"Tags: {tag_count}   In jail: {int(np.sum(jail_timer > 0))}", True, (255, 255, 255))
-    screen.blit(tags_text, (10, 50))
-
-# =========================================================================================================
-# TAG / JAIL FEATURE  ---------------------------------------------------------------- END
-# =========================================================================================================
-
-
-# TODO 5. run a timestep
+# TODO 6. run a timestep
 #    - move agents
 #    - determine if flag captured
 #    -
@@ -313,13 +193,13 @@ def run_timestep():
 #---------------------------------------------------------------------------------------------------------
 
     
-# TODO 5. store data in structure
+# TODO 7. store data in structure
 #    - positional data
 #    - messaging data
 #---------------------------------------------------------------------------------------------------------
 
 
-# TODO 6. visualize data
+# TODO 8. visualize data
 #    - pygame
 #    - what do we want to visualize
 #        - arena over time
