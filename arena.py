@@ -28,6 +28,22 @@ import matplotlib.pyplot as plt  # post-run analysis plots (avg inter-agent dist
 # from messaging import Broadcast, Message
 # from positioning import update_position
 import json
+
+def load_config(path="setup.json"):
+    with open(path, "r", encoding="utf-8") as file:
+        return json.load(file)
+
+config = load_config()
+
+ARENA_WIDTH = int(config["arena_width"])
+ARENA_HEIGHT = int(config["arena_height"])
+NUM_ATTACKERS = int(config["num_attackers"])
+NUM_DEFENDERS = int(config["num_defenders"])
+AGENT_SPEED = float(config["def_speed"])
+COMMUNICATION_RANGE = float(config["com_radius"])
+MAX_TIMESTEPS = int(config["max_frames"])
+FPS = int(config["fps"])
+SEED = int(config["seed"])
 #---------------------------------------------------------------------------------------------------------
 
 
@@ -41,8 +57,8 @@ import json
 #    NUM_DEFENDERS = 5
 #    AGENT_SPEED = 2.0
 #    COMMUNICATION_RANGE = 100.0
-#    FLAG_POSITION = (ARENA_WIDTH -200, ARENA_HEIGHT // 2)
-#    FLAG_RADIUS = 20
+FLAG_POSITION = (ARENA_WIDTH -200, ARENA_HEIGHT // 2)
+FLAG_RADIUS = 20
 #    MAX_TIMESTEPS = 1000
 #    FPS = 60
 BG_COLOR = (0, 0, 0)  # black background
@@ -66,8 +82,11 @@ history = []  # list of dicts to store per-timestep data
 # SEED = 1 -- empty arena
 # SEED = 2 -- forest of cylinders
 # SEED = 3 -- rectangles around
-# SEED = 4 -- channel tunnel to flag
+# SEED = 4 -- moat and bridge
 # SEED = 5 -- castle around flag
+# SEED = 6 -- river
+# SEED = 7 -- maze
+# SEED = 8 -- mountains
 #---------------------------------------------------------------------------------------------------------
 
 
