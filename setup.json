@@ -6,11 +6,8 @@
 	"comm_radius": 10,
 	"max_frames": 1000,
 	"fps": 10,
-	"size": 100, // arena height and width
+	"size": 100,
 	"vision_radius": 10,
-	"arena_length": 100,
+	"arena_height": 100,
 	"arena_width": 100,
-	"flag_position": 
-	"flag_radius": 3,
-	"seed": // reference arena.py for arena type
 }
