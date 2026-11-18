@@ -57,7 +57,7 @@ DEFENDER_COLOR = (0, 0, 255)  # blue defenders
 AGENT_RADIUS = 0.5
 
 # random number generator
-rng = np.random.default_rng()
+rng = np.random.default_rng(SEED)
 
 # Simulate state
 step_count = 0
@@ -70,7 +70,7 @@ history = []  # list of dicts to store per-timestep data
 # SEED = 1 -- empty arena
 # SEED = 2 -- forest of cylinders
 # SEED = 3 -- rectangles around
-# SEED = 4 -- moat and bridge
+# SEED = 4 -- moat and bridge (i.e. tunnel)
 # SEED = 5 -- castle around flag
 # SEED = 6 -- river
 # SEED = 7 -- maze
@@ -90,10 +90,163 @@ MAPS = {
         "attacker_spawn": (0, 20, 20, 80),  # xmin, xmax, ymin, ymax
         "defender_spawn": "around_flag",
         "obstacles": [
-            {"type": "circle", "center": (300, 160), "radius": 3},
-            {"type": "circle", "center": (400, 350), "radius": 3},
+            {"type": "circle", "center": (12, 18), "radius": 4},
+            {"type": "circle", "center": (25, 32), "radius": 3},
+            {"type": "circle", "center": (38, 15), "radius": 5},
+            {"type": "circle", "center": (48, 28), "radius": 3},
+            {"type": "circle", "center": (62, 18), "radius": 4},
+            {"type": "circle", "center": (70, 35), "radius": 5},
+            {"type": "circle", "center": (18, 48), "radius": 3},
+            {"type": "circle", "center": (32, 58), "radius": 4},
+            {"type": "circle", "center": (44, 48), "radius": 5},
+            {"type": "circle", "center": (58, 62), "radius": 3},
+            {"type": "circle", "center": (68, 52), "radius": 4},
+            {"type": "circle", "center": (15, 72), "radius": 5},
+            {"type": "circle", "center": (28, 82), "radius": 3},
+            {"type": "circle", "center": (42, 72), "radius": 4},
+            {"type": "circle", "center": (55, 88), "radius": 5},
+            {"type": "circle", "center": (70, 78), "radius": 3},
         ],
     }
+    3: {
+        "name": "Rectangles",
+        "flag_position": (75, 50),
+        "attacker_spawn": (0, 20, 20, 80),
+        "defender_spawn": "around_flag",
+        "obstacles": [
+            {"type": "rectangle", "rect": (24, 18, 14, 7)},
+            {"type": "rectangle", "rect": (52, 26, 8, 16)},
+            {"type": "rectangle", "rect": (66, 72, 15, 8)},
+            {"type": "rectangle", "rect": (38, 82, 18, 7)},
+            {"type": "rectangle", "rect": (14, 55, 9, 14)},
+        ],
+    },
+    4: {
+        "name": "Moat and Bridge",
+        "flag_position": (75, 50),
+        "attacker_spawn": (0, 20, 20, 80),
+        "defender_spawn": "around_flag",
+        "obstacles": [
+            # Solid square moat, with a bridge gap on the west side
+            {"type": "rectangle", "rect": (50, 20, 4, 60)},  # left
+            {"type": "rectangle", "rect": (96, 20, 4, 60)},  # right
+            {"type": "rectangle", "rect": (50, 20, 50, 4)},  # top
+            {"type": "rectangle", "rect": (50, 76, 50, 4)},  # bottom
+            {"type": "rectangle", "rect": (50, 45, 18, 10)}, # bridge
+        ],
+    }
+    5: {
+        "name": "Castle",
+        "flag_position": (75, 50),
+        "attacker_spawn": (0, 20, 20, 80),
+        "defender_spawn": "around_flag",
+        "obstacles": [
+            # Exterior walls; gap in the west wall is the single entrance
+            {"type": "rectangle", "rect": (30, 18, 3, 28)},
+            {"type": "rectangle", "rect": (30, 54, 3, 28)},
+            {"type": "rectangle", "rect": (30, 18, 65, 3)},
+            {"type": "rectangle", "rect": (30, 79, 65, 3)},
+            {"type": "rectangle", "rect": (92, 18, 3, 64)},
+    
+            # Interior walls form branching corridors around the central passage
+            {"type": "rectangle", "rect": (46, 21, 3, 21)},
+            {"type": "rectangle", "rect": (46, 58, 3, 21)},
+            {"type": "rectangle", "rect": (64, 21, 3, 15)},
+            {"type": "rectangle", "rect": (64, 64, 3, 15)},
+    
+            # Upper and lower partitions, leaving openings to connect corridors
+            {"type": "rectangle", "rect": (49, 36, 15, 3)},
+            {"type": "rectangle", "rect": (67, 36, 22, 3)},
+            {"type": "rectangle", "rect": (49, 61, 15, 3)},
+            {"type": "rectangle", "rect": (67, 61, 22, 3)},
+    
+            # Short inner partitions create turns without blocking the route to the flag
+            {"type": "rectangle", "rect": (79, 39, 3, 9)},
+            {"type": "rectangle", "rect": (79, 52, 3, 6)},
+        ],
+    },
+    6: {
+        "name": "River",
+        "flag_position": (75, 50),
+        "attacker_spawn": (0, 20, 20, 80),
+        "defender_spawn": "around_flag",
+        "obstacles": [
+            {"type": "rectangle", "rect": (0, 14, 12, 6)},
+            {"type": "rectangle", "rect": (10, 17, 12, 6)},
+            {"type": "rectangle", "rect": (20, 21, 12, 6)},
+            {"type": "rectangle", "rect": (30, 27, 12, 6)},
+            {"type": "rectangle", "rect": (40, 34, 12, 7)},
+            {"type": "rectangle", "rect": (50, 42, 12, 7)},
+            {"type": "rectangle", "rect": (60, 51, 12, 7)},
+            {"type": "rectangle", "rect": (70, 58, 12, 7)},
+            {"type": "rectangle", "rect": (80, 63, 12, 6)},
+            {"type": "rectangle", "rect": (90, 66, 10, 6)},
+        ],
+    },
+    7: {
+        "name": "Maze",
+        "flag_position": (75, 50),
+        "attacker_spawn": (0, 20, 20, 80),
+        "defender_spawn": "around_flag",
+        "obstacles": [
+            # Outer walls
+            {"type": "rectangle", "rect": (5, 5, 90, 2)},
+            {"type": "rectangle", "rect": (5, 93, 90, 2)},
+            {"type": "rectangle", "rect": (5, 5, 2, 90)},
+            {"type": "rectangle", "rect": (93, 5, 2, 90)},
+    
+            # Vertical walls
+            {"type": "rectangle", "rect": (20, 5, 2, 38)},
+            {"type": "rectangle", "rect": (20, 57, 2, 38)},
+            {"type": "rectangle", "rect": (35, 5, 2, 24)},
+            {"type": "rectangle", "rect": (35, 43, 2, 52)},
+            {"type": "rectangle", "rect": (50, 5, 2, 52)},
+            {"type": "rectangle", "rect": (50, 71, 2, 24)},
+            {"type": "rectangle", "rect": (65, 5, 2, 24)},
+            {"type": "rectangle", "rect": (65, 43, 2, 52)},
+            {"type": "rectangle", "rect": (80, 5, 2, 38)},
+            {"type": "rectangle", "rect": (80, 57, 2, 38)},
+    
+            # Horizontal walls
+            {"type": "rectangle", "rect": (5, 20, 30, 2)},
+            {"type": "rectangle", "rect": (49, 20, 31, 2)},
+            {"type": "rectangle", "rect": (5, 35, 15, 2)},
+            {"type": "rectangle", "rect": (20, 35, 15, 2)},
+            {"type": "rectangle", "rect": (50, 35, 30, 2)},
+            {"type": "rectangle", "rect": (5, 50, 30, 2)},
+            {"type": "rectangle", "rect": (65, 50, 28, 2)},
+            {"type": "rectangle", "rect": (20, 65, 30, 2)},
+            {"type": "rectangle", "rect": (65, 65, 15, 2)},
+            {"type": "rectangle", "rect": (5, 80, 30, 2)},
+            {"type": "rectangle", "rect": (49, 80, 31, 2)},
+        ],
+    },
+    8: {
+        "name": "Mountains",
+        "flag_position": (75, 50),
+        "attacker_spawn": (0, 20, 20, 80),
+        "defender_spawn": "around_flag",
+        "obstacles": [
+            # Western mountain: wide base and uneven rounded peaks
+            {"type": "rectangle", "rect": (8, 48, 30, 18)},
+            {"type": "circle", "center": (15, 48), "radius": 9},
+            {"type": "circle", "center": (25, 43), "radius": 13},
+            {"type": "circle", "center": (34, 51), "radius": 8},
+    
+            # Northern mountain
+            {"type": "rectangle", "rect": (42, 8, 28, 17)},
+            {"type": "circle", "center": (48, 12), "radius": 8},
+            {"type": "circle", "center": (58, 8), "radius": 12},
+            {"type": "circle", "center": (68, 15), "radius": 8},
+    
+            # Southern mountain
+            {"type": "rectangle", "rect": (37, 76, 33, 16)},
+            {"type": "circle", "center": (43, 76), "radius": 8},
+            {"type": "circle", "center": (54, 72), "radius": 12},
+            {"type": "circle", "center": (65, 78), "radius": 9},
+        ],
+    },
+    
     
 }
 #---------------------------------------------------------------------------------------------------------
