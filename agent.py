@@ -6,8 +6,10 @@
   # each agent's goal
     # defend flag
     # "touch" flag
+from position import Position
+
 class Agent():
 	def __init__(self, id, position):
 		self.id = id
-		self.position = position
-		self.declared_action = []
+		self.pos = position
+		self.declared = Position(0.0, 0.0)
