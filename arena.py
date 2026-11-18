@@ -35,8 +35,8 @@ def load_config(path="setup.json"):
 
 config = load_config()
 
-ARENA_WIDTH = int(config["arena_width"])
-ARENA_HEIGHT = int(config["arena_height"])
+ARENA_WIDTH = int(config["arena_width"]) # 100
+ARENA_HEIGHT = int(config["arena_height"]) # 100
 NUM_ATTACKERS = int(config["num_attackers"])
 NUM_DEFENDERS = int(config["num_defenders"])
 AGENT_SPEED = float(config["def_speed"])
@@ -49,28 +49,15 @@ SEED = int(config["seed"])
 
 # TODO 3. initialize global variables
 # Arena settings
-
-# defined in json
-#    ARENA_WIDTH = 100
-#    ARENA_HEIGHT = 100
-#    NUM_ATTACKERS = 5
-#    NUM_DEFENDERS = 5
-#    AGENT_SPEED = 2.0
-#    COMMUNICATION_RANGE = 100.0
 FLAG_POSITION = (ARENA_WIDTH -200, ARENA_HEIGHT // 2)
 FLAG_RADIUS = 20
-#    MAX_TIMESTEPS = 1000
-#    FPS = 60
 BG_COLOR = (0, 0, 0)  # black background
 ATTACKER_COLOR = (255, 0, 0)  # red attackers
 DEFENDER_COLOR = (0, 0, 255)  # blue defenders
 AGENT_RADIUS = 0.5
 
-# Feature toggles
-ENABLE_TAGGING = True   # False = no tag/jail; the TAG / JAIL FEATURE section can then be commented out
-
 # random number generator
-rng = np.random.default_rng(SEED)
+rng = np.random.default_rng()
 
 # Simulate state
 step_count = 0
@@ -79,6 +66,7 @@ history = []  # list of dicts to store per-timestep data
 #---------------------------------------------------------------------------------------------------------
 
 # TODO 4. different arenas
+
 # SEED = 1 -- empty arena
 # SEED = 2 -- forest of cylinders
 # SEED = 3 -- rectangles around
@@ -87,6 +75,27 @@ history = []  # list of dicts to store per-timestep data
 # SEED = 6 -- river
 # SEED = 7 -- maze
 # SEED = 8 -- mountains
+
+MAPS = {
+    1: {
+        "name": "Open field",
+        "flag_position": (75, 50),
+        "attacker_spawn": (0, 20, 20, 80),  # xmin, xmax, ymin, ymax
+        "defender_spawn": "around_flag",
+        "obstacles": [],
+    },
+    2: {
+        "name": "Cylinder forest",
+        "flag_position": (75, 50),
+        "attacker_spawn": (0, 20, 20, 80),  # xmin, xmax, ymin, ymax
+        "defender_spawn": "around_flag",
+        "obstacles": [
+            {"type": "circle", "center": (300, 160), "radius": 3},
+            {"type": "circle", "center": (400, 350), "radius": 3},
+        ],
+    }
+    
+}
 #---------------------------------------------------------------------------------------------------------
 
 
