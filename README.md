@@ -1,4 +1,13 @@
 # Swarm-CTF
+History:
+History is an array of timesteps
+Timestep is an array of position objects (data in position.x and position.y)
+[[Position, Position, Position][Position, Position, Position]]
+
+ex:
+Timestep 30, agent 4, x coordinate value
+x = defenders_history[30][4].x
+
 
 
 
