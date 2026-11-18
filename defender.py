@@ -1,5 +1,4 @@
 from agent import Agent
-from message import Message
 from position import Position
 import json
 import random
