@@ -1,5 +1,4 @@
 from agent import Agent
-from message import Message
 from position import Position
 # defenders have more "abilities" than you attacker
 # those extra abilities are here
@@ -12,7 +11,7 @@ class Attacker(Agent):
 		super().__init__(id, position)
 
 	def __str__(self):
-			return f"Agent {self.id}: Atk | Pos: ({self.position.x:.2f}, {self.position.y:.2f})"
+			return f"Agent {self.id}: Atk | Pos: ({self.pos.x:.2f}, {self.pos.y:.2f})"
 
 	def __repr__(self):
 		return str(self)
