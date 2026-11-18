@@ -3,6 +3,7 @@ from message import Message
 from position import Position
 import json
 import random
+import math
 
 # defenders have more "abilities" than you attacker
 # those extra abilities are here
@@ -13,24 +14,7 @@ with open("setup.json", "r", encoding="utf-8") as file:
 # for the defender, the extension will consist of:
   # messaging
   # coordination
-import math
 
-import agent
-import json
-
-with open("setup.json", "r") as file:
-	data = json.load(file)
-	comm_radius = data["comm_radius"]
-	vision_radius = data["vision_radius"]
-	grid_size = data["grid_size"]
-
-class Defender(agent.Agent):
-	def __init__(self, id : int, position : list):
-		self.id = id
-		self.position = position
-		self.broadcast = {}
-		self.messages = []
-		self.action = []
 
 class Defender(Agent):
 	def __init__(self, id, position):
@@ -59,8 +43,8 @@ class Defender(Agent):
 		#assemble message
 		self.broadcast = {
 			"agent_id" : self.id,
-			"position" : self.position,
-			"action" : self.action,
+			"position" : self.pos,
+			"action" : self.declared,
 			"enemy_positions" : []
 		}
 
@@ -83,14 +67,14 @@ class Defender(Agent):
 
 				read_ids.append(message["agent_id"])
 				sender_position = message["position"]
-				euclidean = math.sqrt((sender_position[0]-self.position[0])**2 + (sender_position[1]-self.position[1])**2)
-				if euclidean <= comm_radius:
+				euclidean = math.sqrt((sender_position[0]-self.pos.x)**2 + (sender_position[1]-self.pos.y)**2)
+				if euclidean <= data["comm_radius"]:
 					messages.append(message)
 
 
 	def __get_nearby_cells(self):
-		int_x = int(self.position[0])
-		int_y = int(self.position[1])
+		int_x = int(self.pos.x)
+		int_y = int(self.pos.y)
 		neighbor_cells = []
 
 		for x in range(int_x-1, int_x+1):
@@ -100,7 +84,7 @@ class Defender(Agent):
 		return neighbor_cells
 
 
-	def __check_boundaries(self, point, grid_size=grid_size):
+	def __check_boundaries(self, point, grid_size=data["size"]):
 		if point[0] < 0 or point[1] < 0:
 			return False
 		if point[0] >= grid_size or point[1] >= grid_size:
@@ -113,23 +97,23 @@ class Defender(Agent):
 		# returns a list of points in a circle around the agent with a given radius
 		circle_positions=[]
 		
-		circle_x = comm_radius
+		circle_x = data["comm_radius"]
 		circle_y = 0
 		while circle_x >= circle_y:
 			for i in range(circle_x + 1):
 
-				self.__safe_append(circle_positions, [circle_x + self.position[0] - i, circle_y + self.position[1]]) 	# first octant ++  |  (x-i),  y 
-				self.__safe_append(circle_positions, [circle_y + self.position[0], circle_x + self.position[1] - i]) 	# second octant    |  y,      (x-i)
-				self.__safe_append(circle_positions, [-circle_y + self.position[0], circle_x + self.position[1] - i]) 	# third octant -+  | -y,      (x-i)
-				self.__safe_append(circle_positions, [-circle_x + self.position[0] + i, circle_y + self.position[1]]) 	# fourth octant    | -(x-i),  y
-				self.__safe_append(circle_positions, [-circle_x + self.position[0] + i, -circle_y + self.position[1]]) 	# fifth octant +-  | -(x-i), -y
-				self.__safe_append(circle_positions, [-circle_y + self.position[0], -circle_x + self.position[1] + i]) 	# sixth octant     | -y,     -(x-i)
-				self.__safe_append(circle_positions, [circle_y + self.position[0], -circle_x + self.position[1] + i]) 	# seventh octant --|  y,     -(x-i) 
-				self.__safe_append(circle_positions, [circle_x + self.position[0] - i, -circle_y + self.position[1]]) 	# eighth octant    |  (x-i), -y
+				self.__safe_append(circle_positions, [circle_x + self.pos.x - i, circle_y + self.pos.y]) 	# first octant ++  |  (x-i),  y 
+				self.__safe_append(circle_positions, [circle_y + self.pos.x, circle_x + self.pos.y - i]) 	# second octant    |  y,      (x-i)
+				self.__safe_append(circle_positions, [-circle_y + self.pos.x, circle_x + self.pos.y - i]) 	# third octant -+  | -y,      (x-i)
+				self.__safe_append(circle_positions, [-circle_x + self.pos.x + i, circle_y + self.pos.y]) 	# fourth octant    | -(x-i),  y
+				self.__safe_append(circle_positions, [-circle_x + self.pos.x + i, -circle_y + self.pos.y]) 	# fifth octant +-  | -(x-i), -y
+				self.__safe_append(circle_positions, [-circle_y + self.pos.x, -circle_x + self.pos.y + i]) 	# sixth octant     | -y,     -(x-i)
+				self.__safe_append(circle_positions, [circle_y + self.pos.x, -circle_x + self.pos.y + i]) 	# seventh octant --|  y,     -(x-i) 
+				self.__safe_append(circle_positions, [circle_x + self.pos.x - i, -circle_y + self.pos.y]) 	# eighth octant    |  (x-i), -y
 			
 
 			d = math.sqrt((circle_x - 0.5)**2 + (circle_y + 1)**2)
-			if d > comm_radius:
+			if d > data["comm_radius"]:
 				circle_x -= 1
 
 			circle_y += 1
