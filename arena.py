@@ -271,9 +271,6 @@ def build_arena():
     # defenders at normalized positions around the flag
     defenders = FLAG_POSITION + rng.normal(0, 60, size=(NUM_DEFENDERS, 2))
 
-    if ENABLE_TAGGING:
-        tag_reset()
-
 # flag captured (only "free" attackers can capture; all are free when tagging is off)
 def flag_captured_check(attacker_free):
     global flag_captured
@@ -338,38 +335,6 @@ def run_timestep():
     global step_count, attackers, defenders
     if flag_captured or step_count >= MAX_TIMESTEPS:
         return  # stop simulation if flag is captured or max timesteps reached
-
-    # which attackers can act this step (all of them unless tagging puts some in jail)
-    attacker_free = np.ones(NUM_ATTACKERS, dtype=bool)
-    if ENABLE_TAGGING:
-        attacker_free = tag_update()
-
-    # 1. agent behavior: decide directions
-    a_dirs = attacker_policy(attackers, defenders, FLAG_POSITION)
-    a_dirs[~attacker_free] = 0              # jailed attackers stay put
-    if ENABLE_TAGGING:
-        d_dirs = tag_defender_policy(defenders, attackers, FLAG_POSITION, attacker_free)
-    else:
-        d_dirs = defender_policy(defenders, attackers, FLAG_POSITION)
-    # 2. move agents
-    attackers = apply_movement(attackers, a_dirs)
-    defenders = apply_movement(defenders, d_dirs)
-    # 3. check rules (tag first, so a tagged attacker can't also capture this step)
-    if ENABLE_TAGGING:
-        tag_check()
-        attacker_free = jail_timer == 0
-    flag_captured_check(attacker_free)
-    # record history for this timestep
-    record = {
-        'step': step_count,
-        'attackers': attackers.copy(),
-        'defenders': defenders.copy(),
-        'flag_captured': flag_captured
-    }
-    if ENABLE_TAGGING:
-        record['jailed'] = jail_timer > 0   # boolean mask: which attackers are in jail
-    history.append(record)
-
     step_count += 1
 #---------------------------------------------------------------------------------------------------------
 
