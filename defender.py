@@ -19,6 +19,7 @@ class Defender(Agent):
 	def __init__(self, id, position):
 		self.broadcast = []
 		self.messages = []
+		self.enemy_positions = []
 		super().__init__(id, position)
 
 	def __str__(self):
@@ -34,12 +35,16 @@ class Defender(Agent):
 
 		
 	def broadcast_message(self, message_grid):
-		#assemble message
+		# check if enemy locations are known
+		if not self.enemy_positions:
+			return
+
+		# assemble broadcast
 		self.broadcast = {
 			"agent_id" : self.id,
 			"position" : self.pos,
 			"action" : self.declared,
-			"enemy_positions" : []
+			"enemy_positions" : self.enemy_positions
 		}
 
 		#place message in arena within radius
@@ -71,8 +76,8 @@ class Defender(Agent):
 		int_y = int(self.pos.y)
 		neighbor_cells = []
 
-		for x in range(int_x-1, int_x+1):
-			for y in range(int_y-1, int_y+1):
+		for x in range(int_x-1, int_x+2):
+			for y in range(int_y-1, int_y+2):
 				self.__safe_append(neighbor_cells, [x, y])
 
 		return neighbor_cells
@@ -96,14 +101,14 @@ class Defender(Agent):
 		while circle_x >= circle_y:
 			for i in range(circle_x + 1):
 
-				self.__safe_append(circle_positions, [circle_x + self.pos.x - i, circle_y + self.pos.y]) 	# first octant ++  |  (x-i),  y 
-				self.__safe_append(circle_positions, [circle_y + self.pos.x, circle_x + self.pos.y - i]) 	# second octant    |  y,      (x-i)
-				self.__safe_append(circle_positions, [-circle_y + self.pos.x, circle_x + self.pos.y - i]) 	# third octant -+  | -y,      (x-i)
-				self.__safe_append(circle_positions, [-circle_x + self.pos.x + i, circle_y + self.pos.y]) 	# fourth octant    | -(x-i),  y
-				self.__safe_append(circle_positions, [-circle_x + self.pos.x + i, -circle_y + self.pos.y]) 	# fifth octant +-  | -(x-i), -y
-				self.__safe_append(circle_positions, [-circle_y + self.pos.x, -circle_x + self.pos.y + i]) 	# sixth octant     | -y,     -(x-i)
-				self.__safe_append(circle_positions, [circle_y + self.pos.x, -circle_x + self.pos.y + i]) 	# seventh octant --|  y,     -(x-i) 
-				self.__safe_append(circle_positions, [circle_x + self.pos.x - i, -circle_y + self.pos.y]) 	# eighth octant    |  (x-i), -y
+				self.__safe_append(circle_positions, [circle_x + int(self.pos.x) - i, circle_y + int(self.pos.y)]) 	# first octant ++  |  (x-i),  y 
+				self.__safe_append(circle_positions, [circle_y + int(self.pos.x), circle_x + int(self.pos.y) - i]) 	# second octant    |  y,      (x-i)
+				self.__safe_append(circle_positions, [-circle_y + int(self.pos.x), circle_x + int(self.pos.y) - i]) 	# third octant -+  | -y,      (x-i)
+				self.__safe_append(circle_positions, [-circle_x + int(self.pos.x) + i, circle_y + int(self.pos.y)]) 	# fourth octant    | -(x-i),  y
+				self.__safe_append(circle_positions, [-circle_x + int(self.pos.x) + i, -circle_y + int(self.pos.y)]) 	# fifth octant +-  | -(x-i), -y
+				self.__safe_append(circle_positions, [-circle_y + int(self.pos.x), -circle_x + int(self.pos.y) + i]) 	# sixth octant     | -y,     -(x-i)
+				self.__safe_append(circle_positions, [circle_y + int(self.pos.x), -circle_x + int(self.pos.y) + i]) 	# seventh octant --|  y,     -(x-i) 
+				self.__safe_append(circle_positions, [circle_x + int(self.pos.x) - i, -circle_y + int(self.pos.y)]) 	# eighth octant    |  (x-i), -y
 			
 
 			d = math.sqrt((circle_x - 0.5)**2 + (circle_y + 1)**2)
