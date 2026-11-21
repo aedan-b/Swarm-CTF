@@ -1,10 +1,12 @@
 import math
 import random
+import time
+import json
 
 from defender import Defender
 from message_grid import MessageGrid
 from position import Position
-import json
+
 
 with open("setup.json", "r", encoding="utf-8") as file:
 	data = json.load(file)
@@ -52,7 +54,7 @@ def test_circle_broadcast(radius):
 
 def thorough_test_broadcast():
     for i in range(3):
-        stage_names = ["half comm_radius", "at comm_radius", "just after comm_radius"]
+        stage_names = ["half comm_radius", "at comm_radius", "just outside comm_radius"]
         stage_radii = [data["comm_radius"]/2, data["comm_radius"], data["comm_radius"]+0.01]
         print("\n" + stage_names[i])
         test_circle_broadcast(stage_radii[i])
@@ -94,30 +96,38 @@ def num_defenders_random_test(seed):
         defender.enemy_positions.append(Position(0,0))
         defender.broadcast_message(message_grid)
 
-    for defender in defenders:
 
+    for defender in defenders:
         # Brute force check how many messages should have been received
         expected_message_count = 0
         for defender_2 in defenders:
             if defender == defender_2:
                 continue
-            expected_message_count += 1*(math.sqrt((defender.pos.x-defender_2.pos.x)**2+(defender.pos.y-defender_2.pos.y)**2) <= data["comm_radius"])
+            
+            received = (math.sqrt((defender.pos.x-defender_2.pos.x)**2+(defender.pos.y-defender_2.pos.y)**2) <= data["comm_radius"])
+            expected_message_count += 1*received
 
         # actual message count
         defender.read_messages(message_grid)
         actual_message_count = len(defender.messages)
-
+        
         if not (expected_message_count == actual_message_count):
-            print(f"Failed on defender {defender.id}")
+            print(message_grid)
+            color = 41 + defender.id%7
+            print(f"Failed on \033[{color}mdefender {defender.id}\033[00m")
             print(f"expected {expected_message_count} messages, received {actual_message_count}")
             return
 
-        print("success")
+    print(message_grid)
+    print("\033[42mFull field test success\033[00m")
 
+
+def timing_comparison():
+    pass
 
 # thorough_test_broadcast()
 # print("\nSingle test")
-# test_single_broadcast(Position(50, 50), Position(42.93, 42.93))
+# test_single_broadcast(Position(100, 0), Position(95, 0))
 # test_multi_broadcast()
-num_defenders_random_test(0)
+num_defenders_random_test(7)
 

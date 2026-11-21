@@ -50,7 +50,7 @@ class Defender(Agent):
 		#place message in arena within radius
 		broadcast_points = self.__get_circle()
 		for point in broadcast_points:
-			message_grid.grid[point[1]][point[0]].append(self.broadcast)
+			message_grid.grid[point[0]][point[1]].append(self.broadcast)
 
 
 	def read_messages(self, message_grid):
@@ -61,12 +61,15 @@ class Defender(Agent):
 		for cell in cells:
 			messages = message_grid.grid[cell[0]][cell[1]]
 			for message in messages:
+				
 				if message["agent_id"] in read_ids or message["agent_id"] == self.id:
 					continue
-
+				# print(f"agent {message['agent_id']}")
 				read_ids.append(message["agent_id"])
 				sender_position = message["position"]
+				# print("here")
 				euclidean = math.sqrt((sender_position.x-self.pos.x)**2 + (sender_position.y-self.pos.y)**2)
+				# print(euclidean)
 				if euclidean <= data["comm_radius"]:
 					self.messages.append(message)
 

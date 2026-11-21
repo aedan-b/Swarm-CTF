@@ -10,9 +10,10 @@ class MessageGrid():
 	def __str__(self):
 		output = " " + "__"*data["size"] + " "
 
-		for row in self.grid:
+		for y in range(data["size"]):
 			output += "\n|"
-			for cell in row:
+			for x in range(data["size"]):
+				cell = self.grid[x][y]
 				if cell:
 					first_message = cell[0]
 					first_id = first_message["agent_id"]

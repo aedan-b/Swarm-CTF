@@ -1,5 +1,5 @@
 {
-	"num_defenders": 10,
+	"num_defenders": 2000,
 	"def_speed": 2.0,
 	"num_attackers": 10,
 	"atk_speed": 2.0,
