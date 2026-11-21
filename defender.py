@@ -61,7 +61,7 @@ class Defender(Agent):
 		for cell in cells:
 			messages = message_grid.grid[cell[0]][cell[1]]
 			for message in messages:
-				if message["agent_id"] in read_ids:
+				if message["agent_id"] in read_ids or message["agent_id"] == self.id:
 					continue
 
 				read_ids.append(message["agent_id"])
