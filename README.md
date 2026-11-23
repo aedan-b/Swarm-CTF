@@ -1,8 +1,22 @@
 # Swarm-CTF
+scheduler will return [defenders_history, attackers_history]
+
+History:
+
+History is an array of timesteps
+
+Timestep is an array of position objects (data in position.x and position.y)
+
+[[Position, Position, Position][Position, Position, Position]]
+
+ex: Timestep 30, agent 4, x coordinate value
+
+x = defenders_history[30][4].x
 
 
 
-<img width="454" height="400" alt="image" src="https://github.com/user-attachments/assets/4c9e2537-8a68-4c14-a5b8-939d8d635209" />
+
+<img width="1710" height="1704" alt="image" src="https://github.com/user-attachments/assets/77da9357-6bbc-4ce5-bedf-fb5efb41c9f9" />
 <img width="780" height="497" alt="image" src="https://github.com/user-attachments/assets/ea2d686f-7478-4f52-b8e4-b65f7376ed01" />
 
 Messaging using a broadcast system
