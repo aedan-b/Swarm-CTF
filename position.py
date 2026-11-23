@@ -4,3 +4,5 @@ class Position():
 		self.y = y
 	def __str__(self):
 		return f"({self.x:.2f}, {self.y:.2f})"
+	def __repr__(self):
+			return str(self)
