@@ -188,7 +188,7 @@ def _separation(agents, k, radius=SEPARATION_RADIUS):
 def sample(obstacles,
            flag=(75, 50),
            attacker_spawn=(0, 20, 20, 80),   # xmin, xmax, ymin, ymax
-           num_attackers=10,
+           num_attackers=30,
            num_defenders=10,
            steps=600,
            atk_speed=0.45,
