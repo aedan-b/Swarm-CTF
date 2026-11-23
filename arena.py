@@ -300,7 +300,7 @@ def draw_frame(screen, font, t, T, attackers, defenders, captured):
         pygame.draw.circle(screen, ATTACKER_COLOR, to_px(x, y), AGENT_RADIUS * SCALE)
     for x, y in defenders:
         pygame.draw.circle(screen, DEFENDER_COLOR, to_px(x, y), AGENT_RADIUS * SCALE)
-    screen.blit(font.redner(f"Step: {t}/{T - 1} MAP: {MAP['name']}", True, (255, 255, 255)), (10, 10))
+    screen.blit(font.render(f"Step: {t}/{T - 1} MAP: {MAP['name']}", True, (255, 255, 255)), (10, 10))
     screen.blit(font.render(f"Flag Captured: {captured}", True, (255, 255, 255)), (10, 30))
     pygame.display.flip()
         
